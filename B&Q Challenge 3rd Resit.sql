@@ -42,36 +42,48 @@
 -- MENUITEM (ItemId, Description, ServesPerUnit, UnitPrice) PRIMARY KEY (ItemId)
 
 -- TASK 2: Writing SQL query's to verify all tables have been successfully created. 
+DROP TABLE ORGANISATION
 CREATE TABLE ORGANISATION (
     OrgID NVARCHAR(4),
-    OrganisationName NVARCHAR(200)
+    OrganisationName NVARCHAR(200) UNIQUE NOT NULL,
+    PRIMARY KEY (OrgId)
 );
 
+DROP TABLE CLIENT
 CREATE TABLE CLIENT (
-    ClientID INT, 
-    Names NVARCHAR(100), 
-    Phone NVARCHAR(15),
-    OrgID NVARCHAR(4)
+    ClientID INT PRIMARY KEY, 
+    Names NVARCHAR(100) NOT NULL,
+    Phone NVARCHAR(15) NOT NULL UNIQUE, 
+    OrgID NVARCHAR(4),
+    FOREIGN KEY (OrgId) REFERENCES Organisation
 );
 
+DROP TABLE ORDERS
 CREATE TABLE ORDERS (
-    ClientID INT, 
+    ClientID INT,
     OrderDate DATE, 
-    DeliveryAddress NVARCHAR(MAX)
-)
+    DeliveryAddress NVARCHAR(MAX) NOT NULL, 
+    PRIMARY KEY (ClientId, OrderDate),
+    FOREIGN KEY (ClientId) REFERENCES Client
+);
 
+DROP TABLE MENUITEM
 CREATE TABLE MENUITEM (
     ItemID INT, 
-    Descriptions NVARCHAR(100),
-    ServesPerUnit INT,
-    UnitPrice MONEY
+    Descriptions NVARCHAR(100) NOT NULL UNIQUE,
+    ServesPerUnit INT NOT NULL, 
+    UnitPrice MONEY NOT NULL, 
+    PRIMARY KEY (ItemID)
 );
 
+DROP TABLE ORDERLINE
 CREATE TABLE ORDERLINE (
     ItemID INT, 
     ClientID INT, 
     OrderDate DATE,
-    Qty INT
+    Qty INT NOT NULL, 
+    PRIMARY KEY (ItemId, ClientID, OrderDate),
+    FOREIGN KEY (ItemId) REFERENCES MenuItem
 );
 
 INSERT INTO Organisation (OrgID, OrganisationName)
@@ -93,16 +105,18 @@ INSERT INTO Orders (ClientID, OrderDate, DeliveryAddress)
 VALUES 
     (12,	'2021-09-20',	'Room TB225 - SUT - 1 John Street, Hawthorn, 3122'),
     (21,	'2021-09-14',	'Room ATC009 - SUT - 1 John Street, Hawthorn, 3122'),
-    (21,	'2021-09-27',	'Room TB225 - SUT - 1 John Street, Hawthorn, 3122')
+    (21,	'2021-09-27',	'Room TB225 - SUT - 1 John Street, Hawthorn, 3122'),
+    (15,    '2021-09-20',   'The George - 1 John Street, Hawthorn, 3122'),
+    (18,    '2021-09-30',    'Room TB225 - SUT - 1 John Street, Hawthorn, 3122')
 
 INSERT INTO MenuItem (ItemID, Descriptions, ServesPerUnit, UnitPrice)
 VALUES 
     (3214, 'Tropical Pizza - Large',	    2,	 $16.00),
     (3216, 'Tropical Pizza - Small',	    1,	 $12.00),
-    (3218, 'Tropical Pizza - Family',    4,	 $23.00),
-    (4325, 'Can - Coke Zero',	        1,	 $2.50),
+    (3218, 'Tropical Pizza - Family',       4,	 $23.00),
+    (4325, 'Can - Coke Zero',	            1,	 $2.50),
     (4326, 'Can - Lemonade',	            1,	 $2.50), 
-    (4327, 'Can - Harden Up',	        1,	 $7.50)
+    (4327, 'Can - Harden Up',	            1,	 $7.50)
 
 INSERT INTO Orderline (ItemID, ClientID, OrderDate, Qty)
 VALUES
@@ -126,28 +140,22 @@ SELECT * FROM ORDERS
 SELECT * FROM MENUITEM
 SELECT * FROM ORDERLINE 
 
+
+
 -- TASK 4: Write and run queries to meet each of the following requirements. 
 -- Query 1: Write a query that shows the following columns for each orderline. 
 
-SELECT OrganisationName
-FROM Organisation
+SELECT OrganisationName FROM Organisation
+SELECT Names FROM Client 
+SELECT OrderDate FROM Orders
+SELECT Descriptions FROM MenuItem
+SELECT QTY FROM Orderline
 
-SELECT Names 
-FROM Client 
-
-SELECT OrderDate, DeliveryAddress
-FROM Orders
-
-SELECT Descriptions
-FROM MenuItem
-
-SELECT Qty 
-FROM Orderline
 
 -- Query 2: Write a query which shows the total (sum) quantity ordered of menu item by each organisation
-SELECT OrgId, Descriptions, SUM(QTY) AS 'Total QTY'
+SELECT DISTINCT OrgId, Descriptions, SUM(QTY) AS 'Total QTY'
 FROM Organisation, MenuItem, OrderLine
-GROUP BY OrgId, Descriptions
+GROUP BY OrgId, Descriptions, QTY 
 ORDER BY OrgId DESC
 
 -- Query 3: Write a query which lists all OrderLines for the Menu item which has the highest price.
@@ -155,3 +163,27 @@ SELECT ItemID, UnitPrice, Descriptions, ServesPerUnit
 FROM MenuItem
 GROUP BY ItemID, UnitPrice, Descriptions, SErvesPerUnit
 ORDER BY UnitPrice DESC
+GO;
+
+-- Task 5: Create a View Based on Query 1 from Task 4. 
+CREATE VIEW [Caterers Orders] AS
+SELECT OrganisationName, Names, Orders.OrderDate, DeliveryAddress, Descriptions, Qty
+FROM Organisation, Client, Orders, MenuItem, OrderLine
+GO;
+
+SELECT * FROM [Caterers Orders];
+
+-- Task 6: Write and test the queries in Task 4. 
+-- For Task 4 Query 1: Asks to select the proper columns from the table that was created. 
+SELECT * FROM Organisation, Client, Orders, MenuItem, Orderline
+-- Task 4 Query 2: Shows the order of prices from high to low. Proving that the column returns proper values.
+SELECT UnitPrice
+FROM MenuItem 
+ORDER BY UnitPrice DESC 
+--Task 4 Query 3: Returns the SUM of QTY of MenuItems
+SELECT Descriptions 
+FROM MenuItem 
+IF @@ROWCOUNT = 6
+PRINT 'There are 6 Menu Items to pick from.'
+
+
