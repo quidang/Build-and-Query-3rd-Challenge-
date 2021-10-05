@@ -3,7 +3,7 @@
 -- CREATE GITHUB REPOSITORY FOR BUILD AND QUERY CHALLENGE. 
 
 -- CONNECT TO DATABASE. 
-USE SEM2DB;
+-- USE SEM2DB; 
 
 -- TASK 1. Convert ERD to Relational Schema. 
 -- TASK 2. Write and Execute the DDL to create your DB.  
@@ -63,7 +63,7 @@ CREATE TABLE ORDERS (
 CREATE TABLE MENUITEM (
     ItemID INT, 
     Descriptions NVARCHAR(100),
-    ServersPerUnit INT,
+    ServesPerUnit INT,
     UnitPrice MONEY
 );
 
@@ -73,6 +73,52 @@ CREATE TABLE ORDERLINE (
     OrderDate DATE,
     Qty INT
 );
+
+INSERT INTO Organisation (OrgID, OrganisationName)
+VALUES 
+    ('DODG', 'Dod & Gy Widget Imporers'),
+    ('SWUT', 'Swinburne University of Technology')
+
+
+INSERT INTO Client (ClientID, Names, Phone, OrgID)
+VALUES 
+    (12, 'James Hallinan', 0355551234, 'SWUT'),
+    (15, 'Anh Nguyen', 0355552345, 'DODG'),
+    (18, 'Karen Mok', 0355553456, 'SWUT'),
+    (21, 'Tim Baird', 0355554567, 'DODG'),
+    (11, 'Qui Dang', 0481140124, 'SWUT')
+
+
+INSERT INTO Orders (ClientID, OrderDate, DeliveryAddress)
+VALUES 
+    (12,	'2021-09-20',	'Room TB225 - SUT - 1 John Street, Hawthorn, 3122'),
+    (21,	'2021-09-14',	'Room ATC009 - SUT - 1 John Street, Hawthorn, 3122'),
+    (21,	'2021-09-27',	'Room TB225 - SUT - 1 John Street, Hawthorn, 3122')
+
+INSERT INTO MenuItem (ItemID, Descriptions, ServesPerUnit, UnitPrice)
+VALUES 
+    (3214, 'Tropical Pizza - Large',	    2,	 $16.00),
+    (3216, 'Tropical Pizza - Small',	    1,	 $12.00),
+    (3218, 'Tropical Pizza - Family',    4,	 $23.00),
+    (4325, 'Can - Coke Zero',	        1,	 $2.50),
+    (4326, 'Can - Lemonade',	            1,	 $2.50), 
+    (4327, 'Can - Harden Up',	        1,	 $7.50)
+
+INSERT INTO Orderline (ItemID, ClientID, OrderDate, Qty)
+VALUES
+    (3216,	12,	'2021-09-20',	2),
+    (4326,	12,	'2021-09-20',	1),
+    (3218,	21,	'2021-09-14',	1),
+    (3214,	21,	'2021-09-14',	1),
+    (4325,	21,	'2021-09-14',	4),
+    (4327,	21,	'2021-09-14',	2),
+    (3216,	21,	'2021-09-27',	1),
+    (4327,	21,	'2021-09-27',	1),
+    (3218,	21,	'2021-09-27',	2),
+    (3216,	15,	'2021-09-20',	2),
+    (4326,	15,	'2021-09-20',	1),
+    (3216,	18,	'2021-09-30',	1),
+    (4327,	18,	'2021-09-30',	1)
 
 SELECT * FROM ORGANISATION 
 SELECT * FROM CLIENT
