@@ -1,47 +1,31 @@
 -- STUDENT ID: 103585238 NAME: HUYNH QUI DANG 
 
 -- CREATE GITHUB REPOSITORY FOR BUILD AND QUERY CHALLENGE. 
-
 -- CONNECT TO DATABASE. 
 -- USE SEM2DB; 
 
--- TASK 1. Convert ERD to Relational Schema. 
--- TASK 2. Write and Execute the DDL to create your DB.  
-    -- Successfully create tables from the DD provided.
-    -- Confirm that tables were created via Select * From (Table Names).
--- TASK 3. Adding Test Data to Tables. 
--- TASK 4. Write and run queries to meet each of the following requirements. 
-    -- 
-                
--- TASK 5. 
--- SQL EXAMPLES: 
--- CREATE TABLE table_name (       
---     column1 datatype,
---     column2 datatype,
---     column3 datatype,
---    ....
--- );
--- CREATE TABLE Persons (
---     PersonID int,
---     LastName varchar(255),
---     FirstName varchar(255),
---     Address varchar(255),
---     City varchar(255)
--- );
--- SYNTAX: 
--- CREATE TABLE new_table_name AS
---     SELECT column1, column2,...
---     FROM existing_table_name
---     WHERE ....;
-
 -- TASK 1: Converting the provided ERD to a Relational Schema 
--- ORGANISATION (OrgId, OrganisationName) PRIMARY KEY (LecId)
--- CLIENT (ClientID, Name, Phone) PRIMARY KEY (ClientId)
--- ORDER (DateTimePlaced, DeliveryAddress) PRIMARY KEY (DateTimePlaced)
--- ORDERLINE (Qty) FOREIGN KEY (DateTimePlaced, ItemId)
--- MENUITEM (ItemId, Description, ServesPerUnit, UnitPrice) PRIMARY KEY (ItemId)
+
+-- ORGANISATION (OrgId, OrganisationName) 
+-- PRIMARY KEY (OrgId)
+
+-- CLIENT (ClientID, Name, Phone) 
+-- PRIMARY KEY (ClientId) FOREIGN KEY (OrgID) REFERENCES ORGANISATION
+
+-- ORDER (ClientID, DateTimePlaced, DeliveryAddress) 
+-- PRIMARY KEY (DateTimePlaced
+-- FOREIGN KEY (ClientID) REFERENCES Client 
+
+-- ORDERLINE (ClientID, OrderDate, DeliveryAddress)
+-- PRIMARY KEY (ClientID, OrderDate)
+-- FORIEGN KEY (ClientID) REFERENCES Client 
+-- FOREIGN KEY (ItemID) REFERNCES MenuItem
+
+-- MENUITEM (ItemId, Description, ServesPerUnit, UnitPrice) 
+-- PRIMARY KEY (ItemId)
 
 -- TASK 2: Writing SQL query's to verify all tables have been successfully created. 
+
 DROP TABLE ORGANISATION
 CREATE TABLE ORGANISATION (
     OrgID NVARCHAR(4),
@@ -88,7 +72,7 @@ CREATE TABLE ORDERLINE (
 
 INSERT INTO Organisation (OrgID, OrganisationName)
 VALUES 
-    ('DODG', 'Dod & Gy Widget Imporers'),
+    ('DODG', 'Dod & Gy Widget Importers'),
     ('SWUT', 'Swinburne University of Technology')
 
 
@@ -140,23 +124,24 @@ SELECT * FROM ORDERS
 SELECT * FROM MENUITEM
 SELECT * FROM ORDERLINE 
 
-
-
 -- TASK 4: Write and run queries to meet each of the following requirements. 
 -- Query 1: Write a query that shows the following columns for each orderline. 
 
-SELECT OrganisationName FROM Organisation
-SELECT Names FROM Client 
-SELECT OrderDate FROM Orders
-SELECT Descriptions FROM MenuItem
-SELECT QTY FROM Orderline
+SELECT ORGANISATIONNAME FROM ORGANISATION
+SELECT NAMES FROM CLIENT 
+SELECT ORDERDATE, DELIVERYADDRESS FROM ORDERS 
+SELECT QTY FROM ORDERLINE 
 
 
 -- Query 2: Write a query which shows the total (sum) quantity ordered of menu item by each organisation
-SELECT DISTINCT OrgId, Descriptions, SUM(QTY) AS 'Total QTY'
-FROM Organisation, MenuItem, OrderLine
-GROUP BY OrgId, Descriptions, QTY 
-ORDER BY OrgId DESC
+SELECT OG.OrgID, M.Description, SUM(QTY) AS 'Total quantity ordered'
+FROM MenuItem M
+INNER JOIN OrderLine OL ON OL.ITEMID = M.ItemID
+INNER JOIN Client C ON OL.ClientID = C.ClientID
+INNER JOIN Organisation OG ON C.OrgID = OG.OrgID
+GROUP BY OG.OrgID, M.Description
+ORDER BY OrgId ASC
+
 
 -- Query 3: Write a query which lists all OrderLines for the Menu item which has the highest price.
 SELECT ItemID, UnitPrice, Descriptions, ServesPerUnit
