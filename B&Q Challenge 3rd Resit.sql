@@ -126,3 +126,32 @@ SELECT * FROM ORDERS
 SELECT * FROM MENUITEM
 SELECT * FROM ORDERLINE 
 
+-- TASK 4: Write and run queries to meet each of the following requirements. 
+-- Query 1: Write a query that shows the following columns for each orderline. 
+
+SELECT OrganisationName
+FROM Organisation
+
+SELECT Names 
+FROM Client 
+
+SELECT OrderDate, DeliveryAddress
+FROM Orders
+
+SELECT Descriptions
+FROM MenuItem
+
+SELECT Qty 
+FROM Orderline
+
+-- Query 2: Write a query which shows the total (sum) quantity ordered of menu item by each organisation
+SELECT OrgId, Descriptions, SUM(QTY) AS 'Total QTY'
+FROM Organisation, MenuItem, OrderLine
+GROUP BY OrgId, Descriptions
+ORDER BY OrgId DESC
+
+-- Query 3: Write a query which lists all OrderLines for the Menu item which has the highest price.
+SELECT ItemID, UnitPrice, Descriptions, ServesPerUnit
+FROM MenuItem
+GROUP BY ItemID, UnitPrice, Descriptions, SErvesPerUnit
+ORDER BY UnitPrice DESC
