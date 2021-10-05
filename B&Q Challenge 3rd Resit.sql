@@ -14,16 +14,13 @@
     -- 
                 
 -- TASK 5. 
-
 -- SQL EXAMPLES: 
-
 -- CREATE TABLE table_name (       
 --     column1 datatype,
 --     column2 datatype,
 --     column3 datatype,
 --    ....
 -- );
-
 -- CREATE TABLE Persons (
 --     PersonID int,
 --     LastName varchar(255),
@@ -31,11 +28,15 @@
 --     Address varchar(255),
 --     City varchar(255)
 -- );
-
 -- SYNTAX: 
 -- CREATE TABLE new_table_name AS
 --     SELECT column1, column2,...
 --     FROM existing_table_name
 --     WHERE ....;
 
-
+-- TASK 1: Converting the provided ERD to a Relational Schema 
+-- ORGANISATION (OrgId, OrganisationName) PRIMARY KEY (LecId)
+-- CLIENT (ClientID, Name, Phone) PRIMARY KEY (ClientId)
+-- ORDER (DateTimePlaced, DeliveryAddress) PRIMARY KEY (DateTimePlaced)
+-- ORDERLINE (Qty) FOREIGN KEY (DateTimePlaced, ItemId)
+-- MENUITEM (ItemId, Description, ServesPerUnit, UnitPrice) PRIMARY KEY (ItemId)
